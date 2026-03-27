@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lettuce Print - Label Pricing Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .size-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .radio-option input[type="radio"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .radio-option.selected {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .results-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .cost-breakdown {
+            margin-bottom: 30px;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+        }
+
+        .cost-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .cost-value {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .total-cost {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .total-cost .label {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .total-cost .amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .sell-price-highlight {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+            border: 2px solid #17a2b8;
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .sell-price-highlight .label {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .sell-price-highlight .amount {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .profit-indicator {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .volume-tiers {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            margin-top: 20px;
+        }
+
+        .tier {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tier:last-child {
+            border-bottom: none;
+        }
+
+        .tier-range {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .tier-discount {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .comparison-section {
+            grid-column: 1 / -1;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .comparison-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+
+        .comparison-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .comparison-card .price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .comparison-card .savings {
+            color: #28a745;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .size-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            margin-top: 10px;
+        }
+
+        .size-info p {
+            margin: 5px 0;
+            color: #1565c0;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #495057;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .size-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+
+            /* Responsive pricing table */
+            .suggested-pricing-section {
+                padding: 20px;
+            }
+            
+            .pricing-table {
+                font-size: 0.8rem;
+            }
+            
+            .pricing-table th,
+            .pricing-table td {
+                padding: 8px 6px;
+            }
+            
+            .pricing-highlights {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .highlight-card {
+                padding: 15px;
+            }
+            
+            .highlight-icon {
+                font-size: 1.5rem;
+                min-width: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pricing-table {
+                font-size: 0.7rem;
+            }
+            
+            .pricing-table th,
+            .pricing-table td {
+                padding: 6px 4px;
+            }
+            
+            .pricing-table .quantity-cell,
+            .pricing-table .total-cell {
+                font-size: 0.9rem;
+            }
+            
+            .pricing-table .discount-cell,
+            .pricing-table .cost-cell,
+            .pricing-table .savings-cell {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Suggested Pricing Section Styles */
+        .suggested-pricing-section {
+            grid-column: 1 / -1;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .pricing-table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            background: white;
+        }
+
+        .pricing-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .pricing-table th {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 16px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+            line-height: 1.2;
+        }
+
+        .pricing-table th:first-child {
+            border-top-left-radius: 10px;
+        }
+
+        .pricing-table th:last-child {
+            border-top-right-radius: 10px;
+        }
+
+        .pricing-table td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 500;
+        }
+
+        .pricing-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .pricing-table tbody tr:hover {
+            background: #f8f9ff;
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .pricing-table .quantity-cell {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .pricing-table .discount-cell {
+            color: #28a745;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .pricing-table .cost-cell {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 1rem;
+        }
+
+        .pricing-table .sell-price-cell {
+            font-weight: 700;
+            color: #17a2b8;
+            font-size: 1rem;
+            background: #f8f9ff;
+        }
+
+        .pricing-table .total-cell {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .pricing-table .savings-cell {
+            color: #28a745;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .pricing-table .highlight-tier {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+            border-left: 4px solid #28a745;
+        }
+
+        .pricing-table .popular-tier {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-left: 4px solid #ffc107;
+            position: relative;
+        }
+
+        .pricing-table .popular-tier::before {
+            content: "POPULAR";
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: #ffc107;
+            color: #2c3e50;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .pricing-highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .highlight-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .highlight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .highlight-icon {
+            font-size: 2rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .highlight-text {
+            flex: 1;
+            color: #495057;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .highlight-text strong {
+            color: #2c3e50;
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            
+            .action-buttons {
+                display: none;
+            }
+            
+            .print-only {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Lettuce Print</h1>
+            <p>Professional Label Pricing Calculator</p>
+        </div>
+
+        <div class="main-content">
+            <div class="calculator-grid">
+                <div class="input-section">
+                    <h2 class="section-title">Label Specifications</h2>
+                    
+                    <div class="form-group">
+                        <label for="quantity">Quantity (labels)</label>
+                        <input type="number" id="quantity" min="100" max="1000000" value="1000" step="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Label Dimensions (inches)</label>
+                        <div class="size-inputs">
+                            <div>
+                                <label for="width" style="font-size: 0.9rem; font-weight: 500; margin-bottom: 5px;">Width</label>
+                                <input type="number" id="width" min="0.5" max="12" value="2" step="0.1" placeholder="Width">
+                            </div>
+                            <div>
+                                <label for="length" style="font-size: 0.9rem; font-weight: 500; margin-bottom: 5px;">Length</label>
+                                <input type="number" id="length" min="0.5" max="12" value="3" step="0.1" placeholder="Length">
+                            </div>
+                        </div>
+                        <div class="size-info">
+                            <p><strong>Total Area:</strong> <span id="totalArea">6.0 sq in</span></p>
+                            <p><strong>Ink Coverage:</strong> <span id="inkCoverage">Standard (25%)</span></p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Material</label>
+                        <div class="radio-group">
+                            <label class="radio-option selected">
+                                <input type="radio" name="material" value="standard" checked>
+                                <span>Standard</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="material" value="bopp">
+                                <span>BOPP (33% premium)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Laminate</label>
+                        <div class="radio-group">
+                            <label class="radio-option selected">
+                                <input type="radio" name="laminate" value="gloss" checked>
+                                <span>Gloss</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="laminate" value="matte">
+                                <span>Matte</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="actualInkCost">Actual Ink Cost per Label (from test print)</label>
+                        <input type="number" id="actualInkCost" min="0" max="1" value="0.021" step="0.0001" placeholder="$0.0000">
+                        <small style="color: #6c757d; font-size: 0.85rem; margin-top: 5px; display: block;">Run a test print to determine accurate ink usage</small>
+                    </div>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="section-title">Cost Breakdown</h2>
+                    
+                    <div class="cost-breakdown">
+                        <div class="cost-item">
+                            <span class="cost-label">Actual Ink Cost</span>
+                            <span class="cost-value" id="inkCost">$0.021</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Facestock Cost</span>
+                            <span class="cost-value" id="facestockCost">$0.009</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Laminate Cost</span>
+                            <span class="cost-value" id="laminateCost">$0.003</span>
+                        </div>
+                    </div>
+
+                    <div class="total-cost">
+                        <div class="label">Cost per Label</div>
+                        <div class="amount" id="totalCost">$0.033</div>
+                    </div>
+
+                    <div class="total-cost sell-price-highlight">
+                        <div class="label">Suggested Sell Price per Label</div>
+                        <div class="amount" id="sellPrice">$0.066</div>
+                        <div class="profit-indicator">100% markup = 50% profit margin</div>
+                    </div>
+
+                    <div id="discountInfo" style="background: #e8f5e8; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; margin-bottom: 15px; display: none;">
+                        <div style="font-weight: 600; color: #155724; margin-bottom: 5px;" id="discountTier">Volume Discount Applied</div>
+                        <div style="color: #155724;" id="savingsAmount">Savings: $0.00</div>
+                    </div>
+
+                    <div class="total-cost" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        <div class="label">Total Project Cost</div>
+                        <div class="amount" id="projectCost">$33.00</div>
+                    </div>
+
+                    <div class="total-cost sell-price-highlight">
+                        <div class="label">Total Suggested Sell Price</div>
+                        <div class="amount" id="totalSellPrice">$66.00</div>
+                        <div class="profit-indicator">100% markup = 50% profit margin</div>
+                    </div>
+
+                    <div class="volume-tiers">
+                        <h3 style="margin-bottom: 15px; color: #2c3e50;">Volume Pricing Tiers</h3>
+                        <div class="tier">
+                            <span class="tier-range">100 - 999 labels</span>
+                            <span class="tier-discount">Base Price</span>
+                        </div>
+                        <div class="tier">
+                            <span class="tier-range">1,000 - 4,999 labels</span>
+                            <span class="tier-discount">3% Discount</span>
+                        </div>
+                        <div class="tier">
+                            <span class="tier-range">5,000 - 9,999 labels</span>
+                            <span class="tier-discount">7% Discount</span>
+                        </div>
+                        <div class="tier">
+                            <span class="tier-range">10,000 - 24,999 labels</span>
+                            <span class="tier-discount">12% Discount</span>
+                        </div>
+                        <div class="tier">
+                            <span class="tier-range">25,000+ labels</span>
+                            <span class="tier-discount">18% Discount</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="suggested-pricing-section">
+                <h2 class="section-title">Pricing Breakdown: Cost vs Sell Price</h2>
+                <p style="margin-bottom: 25px; color: #6c757d; text-align: center;">Complete pricing analysis with 100% markup for professional customer quotes</p>
+                
+                <div class="pricing-table-container">
+                    <table class="pricing-table" id="suggestedPricingTable">
+                        <thead>
+                            <tr>
+                                <th>Quantity</th>
+                                <th>Discount %</th>
+                                <th>Your Cost (Standard)</th>
+                                <th>Sell Price (Standard)</th>
+                                <th>Your Cost (BOPP)</th>
+                                <th>Sell Price (BOPP)</th>
+                                <th>Total Cost (Standard)</th>
+                                <th>Total Sell Price (Standard)</th>
+                                <th>Total Cost (BOPP)</th>
+                                <th>Total Sell Price (BOPP)</th>
+                                <th>Savings vs Base</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pricingTableBody">
+                            <!-- Dynamic content will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pricing-highlights">
+                    <div class="highlight-card">
+                        <div class="highlight-icon">💡</div>
+                        <div class="highlight-text">
+                            <strong>Best Value:</strong> 10,000+ units offer significant savings
+                        </div>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-icon">📈</div>
+                        <div class="highlight-text">
+                            <strong>Volume Benefits:</strong> Larger orders reduce per-unit costs substantially
+                        </div>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-icon">🎯</div>
+                        <div class="highlight-text">
+                            <strong>Sales Tip:</strong> Show customers the jump from 5,000 to 10,000 for maximum impact
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-section">
+                <h2 class="section-title">Material Comparison</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h3>Standard Labels</h3>
+                        <div class="price" id="standardPrice">$0.033</div>
+                        <p>Your Cost per label</p>
+                        <div class="price" id="standardSellPrice" style="color: #17a2b8; margin-top: 10px;">$0.066</div>
+                        <p>Suggested Sell Price per label</p>
+                        <p style="margin-top: 10px; color: #6c757d;">Eco-friendly, cost-effective solution for indoor applications</p>
+                        <div id="standardSavings" style="margin-top: 10px; color: #28a745; font-weight: 600; display: none;"></div>
+                    </div>
+                    <div class="comparison-card">
+                        <h3>BOPP Labels</h3>
+                        <div class="price" id="boppPrice">$0.044</div>
+                        <p>Your Cost per label</p>
+                        <div class="price" id="boppSellPrice" style="color: #17a2b8; margin-top: 10px;">$0.088</div>
+                        <p>Suggested Sell Price per label</p>
+                        <p style="margin-top: 10px; color: #6c757d;">Durable, water-resistant for outdoor and premium applications</p>
+                        <div class="savings" id="premiumAmount">33% premium</div>
+                        <div id="boppSavings" style="margin-top: 10px; color: #28a745; font-weight: 600; display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="window.print()">
+                    <span>🖨️</span> Print Quote
+                </button>
+                <button class="btn btn-secondary" onclick="exportQuote()">
+                    <span>📄</span> Export PDF
+                </button>
+                <button class="btn btn-secondary" onclick="resetCalculator()">
+                    <span>🔄</span> Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pricing data based on Bean Counter analysis
+        // Updated to use area-based calculations
+        const pricingData = {
+            ink: {
+                baseRate: 0.0035, // Base ink cost per square inch at 25% coverage
+                coverageMultiplier: 0.25 // Standard 25% coverage
+            },
+            facestock: {
+                standard: 0.0015, // Standard material cost per square inch
+                bopp: 0.0020      // BOPP material cost per square inch (33% premium)
+            },
+            laminate: {
+                gloss: 0.0005,    // Gloss laminate cost per square inch
+                matte: 0.0007     // Matte laminate cost per square inch
+            }
+        };
+
+        // Volume discount tiers - New aggressive 4-tier structure
+        const volumeDiscounts = [
+            { min: 0, max: 999, discount: 0, label: "Base Price" },
+            { min: 1000, max: 4999, discount: 0.03, label: "3% Volume Discount" },
+            { min: 5000, max: 9999, discount: 0.07, label: "7% Volume Discount" },
+            { min: 10000, max: 24999, discount: 0.12, label: "12% Volume Discount" },
+            { min: 25000, max: Infinity, discount: 0.18, label: "18% Volume Discount" }
+        ];
+
+        // DOM elements
+        const quantityInput = document.getElementById('quantity');
+        const widthInput = document.getElementById('width');
+        const lengthInput = document.getElementById('length');
+        const actualInkCostInput = document.getElementById('actualInkCost');
+        const materialRadios = document.querySelectorAll('input[name="material"]');
+        const laminateRadios = document.querySelectorAll('input[name="laminate"]');
+
+        // Result elements
+        const inkCostEl = document.getElementById('inkCost');
+        const facestockCostEl = document.getElementById('facestockCost');
+        const laminateCostEl = document.getElementById('laminateCost');
+        const totalCostEl = document.getElementById('totalCost');
+        const projectCostEl = document.getElementById('projectCost');
+        const sellPriceEl = document.getElementById('sellPrice');
+        const totalSellPriceEl = document.getElementById('totalSellPrice');
+        const standardPriceEl = document.getElementById('standardPrice');
+        const boppPriceEl = document.getElementById('boppPrice');
+        const standardSellPriceEl = document.getElementById('standardSellPrice');
+        const boppSellPriceEl = document.getElementById('boppSellPrice');
+        const premiumAmountEl = document.getElementById('premiumAmount');
+
+        // Info elements
+        const totalAreaEl = document.getElementById('totalArea');
+        const inkCoverageEl = document.getElementById('inkCoverage');
+
+        function calculateArea() {
+            const width = parseFloat(widthInput.value) || 2.0;
+            const length = parseFloat(lengthInput.value) || 3.0;
+            return width * length;
+        }
+
+        function getInkCoverageLevel(area) {
+            // Determine ink coverage based on label size
+            if (area <= 2) return { level: 'Minimal', percentage: 0.15 };
+            if (area <= 6) return { level: 'Standard', percentage: 0.25 };
+            if (area <= 12) return { level: 'High', percentage: 0.35 };
+            return { level: 'Maximum', percentage: 0.45 };
+        }
+
+        function updateCalculations() {
+            const quantity = parseInt(quantityInput.value) || 1000;
+            const area = calculateArea();
+            const material = document.querySelector('input[name="material"]:checked').value;
+            const laminate = document.querySelector('input[name="laminate"]:checked').value;
+            const actualInkCost = parseFloat(actualInkCostInput.value) || 0.021;
+
+            // Update size info
+            const coverageInfo = getInkCoverageLevel(area);
+            totalAreaEl.textContent = `${area.toFixed(1)} sq in`;
+            inkCoverageEl.textContent = `${coverageInfo.level} (${(coverageInfo.percentage * 100).toFixed(0)}%)`;
+
+            // Calculate base costs per square inch
+            const facestockCostPerSqIn = pricingData.facestock[material];
+            const laminateCostPerSqIn = pricingData.laminate[laminate];
+
+            // Calculate total costs per label
+            const facestockCost = facestockCostPerSqIn * area;
+            const laminateCost = laminateCostPerSqIn * area;
+
+            const baseCostPerLabel = actualInkCost + facestockCost + laminateCost;
+
+            // Apply volume discount
+            const discountTier = getVolumeDiscount(quantity);
+            const discount = discountTier.discount;
+            const discountedCostPerLabel = baseCostPerLabel * (1 - discount);
+            const savingsPerLabel = baseCostPerLabel - discountedCostPerLabel;
+
+            // Calculate sell prices (100% markup = cost × 2)
+            const sellPricePerLabel = discountedCostPerLabel * 2;
+            const totalSellPriceAmount = sellPricePerLabel * quantity;
+
+            // Update display
+            inkCostEl.textContent = `$${actualInkCost.toFixed(4)}`;
+            facestockCostEl.textContent = `$${facestockCost.toFixed(4)}`;
+            laminateCostEl.textContent = `$${laminateCost.toFixed(4)}`;
+            totalCostEl.textContent = `$${discountedCostPerLabel.toFixed(3)}`;
+            sellPriceEl.textContent = `$${sellPricePerLabel.toFixed(3)}`;
+            projectCostEl.textContent = `$${(discountedCostPerLabel * quantity).toFixed(2)}`;
+            totalSellPriceEl.textContent = `$${totalSellPriceAmount.toFixed(2)}`;
+
+            // Update discount information
+            updateDiscountDisplay(discountTier, savingsPerLabel, quantity);
+
+            // Update comparison
+            updateComparison(area, laminate, discount, actualInkCost);
+        }
+
+        function getVolumeDiscount(quantity) {
+            for (const tier of volumeDiscounts) {
+                if (quantity >= tier.min && quantity <= tier.max) {
+                    return tier;
+                }
+            }
+            return volumeDiscounts[0]; // Return base tier if no match
+        }
+
+        function updateDiscountDisplay(discountTier, savingsPerLabel, quantity) {
+            const discountInfo = document.getElementById('discountInfo');
+            const discountTierEl = document.getElementById('discountTier');
+            const savingsAmountEl = document.getElementById('savingsAmount');
+            
+            if (discountTier.discount > 0) {
+                discountInfo.style.display = 'block';
+                discountTierEl.textContent = `${(discountTier.discount * 100).toFixed(0)}% Volume Discount Applied`;
+                const totalSavings = savingsPerLabel * quantity;
+                savingsAmountEl.textContent = `Savings: $${totalSavings.toFixed(2)} total ($${savingsPerLabel.toFixed(4)} per label)`;
+            } else {
+                discountInfo.style.display = 'none';
+            }
+        }
+
+        function updateComparison(area, laminate, discount, actualInkCost) {
+            const quantity = parseInt(quantityInput.value) || 1000;
+            
+            // Calculate standard cost (without discount)
+            const standardFacestockCost = pricingData.facestock.standard * area;
+            const standardLaminateCost = pricingData.laminate[laminate] * area;
+            const standardBaseTotal = actualInkCost + standardFacestockCost + standardLaminateCost;
+            const standardDiscountedTotal = standardBaseTotal * (1 - discount);
+
+            // Calculate BOPP cost (without discount)
+            const boppFacestockCost = pricingData.facestock.bopp * area;
+            const boppLaminateCost = pricingData.laminate[laminate] * area;
+            const boppBaseTotal = actualInkCost + boppFacestockCost + boppLaminateCost;
+            const boppDiscountedTotal = boppBaseTotal * (1 - discount);
+
+            standardPriceEl.textContent = `$${standardDiscountedTotal.toFixed(3)}`;
+            boppPriceEl.textContent = `$${boppDiscountedTotal.toFixed(3)}`;
+
+            // Calculate sell prices for comparison (100% markup)
+            const standardSellPrice = standardDiscountedTotal * 2;
+            const boppSellPrice = boppDiscountedTotal * 2;
+            
+            standardSellPriceEl.textContent = `$${standardSellPrice.toFixed(3)}`;
+            boppSellPriceEl.textContent = `$${boppSellPrice.toFixed(3)}`;
+
+            const premium = ((boppDiscountedTotal - standardDiscountedTotal) / standardDiscountedTotal * 100).toFixed(0);
+            premiumAmountEl.textContent = `${premium}% premium`;
+
+            // Update savings information for both materials
+            const standardSavingsEl = document.getElementById('standardSavings');
+            const boppSavingsEl = document.getElementById('boppSavings');
+            
+            if (discount > 0) {
+                const standardSavings = (standardBaseTotal - standardDiscountedTotal) * quantity;
+                const boppSavings = (boppBaseTotal - boppDiscountedTotal) * quantity;
+                
+                standardSavingsEl.style.display = 'block';
+                standardSavingsEl.textContent = `You save: $${standardSavings.toFixed(2)}`;
+                
+                boppSavingsEl.style.display = 'block';
+                boppSavingsEl.textContent = `You save: $${boppSavings.toFixed(2)}`;
+            } else {
+                standardSavingsEl.style.display = 'none';
+                boppSavingsEl.style.display = 'none';
+            }
+
+            // Update the suggested pricing table
+            updateSuggestedPricingTable(area, laminate, actualInkCost);
+        }
+
+        function updateSuggestedPricingTable(area, laminate, actualInkCost) {
+            const pricingTableBody = document.getElementById('pricingTableBody');
+            const quantityTiers = [1000, 2500, 5000, 10000, 20000, 30000];
+            
+            // Calculate base costs per label (no discount)
+            const standardFacestockCost = pricingData.facestock.standard * area;
+            const standardLaminateCost = pricingData.laminate[laminate] * area;
+            const standardBaseTotal = actualInkCost + standardFacestockCost + standardLaminateCost;
+
+            const boppFacestockCost = pricingData.facestock.bopp * area;
+            const boppLaminateCost = pricingData.laminate[laminate] * area;
+            const boppBaseTotal = actualInkCost + boppFacestockCost + boppLaminateCost;
+
+            // Base price (no discount) for savings calculation
+            const baseDiscountTier = getVolumeDiscount(100);
+            const baseDiscount = baseDiscountTier.discount;
+            const baseStandardCost = standardBaseTotal * (1 - baseDiscount);
+            const baseBoppCost = boppBaseTotal * (1 - baseDiscount);
+
+            pricingTableBody.innerHTML = '';
+
+            quantityTiers.forEach((quantity, index) => {
+                const discountTier = getVolumeDiscount(quantity);
+                const discount = discountTier.discount;
+                
+                const standardCost = standardBaseTotal * (1 - discount);
+                const boppCost = boppBaseTotal * (1 - discount);
+                
+                // Calculate sell prices (100% markup)
+                const standardSellPrice = standardCost * 2;
+                const boppSellPrice = boppCost * 2;
+                
+                const standardTotal = standardCost * quantity;
+                const boppTotal = boppCost * quantity;
+                const standardTotalSell = standardSellPrice * quantity;
+                const boppTotalSell = boppSellPrice * quantity;
+                
+                const standardSavings = (baseStandardCost - standardCost) * quantity;
+                const boppSavings = (baseBoppCost - boppCost) * quantity;
+                
+                const row = document.createElement('tr');
+                
+                // Add special styling for popular and highlight tiers
+                let rowClass = '';
+                if (quantity === 10000) {
+                    rowClass = 'popular-tier';
+                } else if (quantity >= 20000) {
+                    rowClass = 'highlight-tier';
+                }
+                
+                row.className = rowClass;
+                row.innerHTML = `
+                    <td class="quantity-cell">${quantity.toLocaleString()}</td>
+                    <td class="discount-cell">${(discount * 100).toFixed(0)}%</td>
+                    <td class="cost-cell">$${standardCost.toFixed(4)}</td>
+                    <td class="sell-price-cell">$${standardSellPrice.toFixed(4)}</td>
+                    <td class="cost-cell">$${boppCost.toFixed(4)}</td>
+                    <td class="sell-price-cell">$${boppSellPrice.toFixed(4)}</td>
+                    <td class="total-cell">$${standardTotal.toFixed(2)}</td>
+                    <td class="total-cell" style="background: #f0f8ff; color: #17a2b8;">$${standardTotalSell.toFixed(2)}</td>
+                    <td class="total-cell">$${boppTotal.toFixed(2)}</td>
+                    <td class="total-cell" style="background: #f0f8ff; color: #17a2b8;">$${boppTotalSell.toFixed(2)}</td>
+                    <td class="savings-cell">$${Math.max(standardSavings, boppSavings).toFixed(2)}</td>
+                `;
+                
+                pricingTableBody.appendChild(row);
+            });
+        }
+
+        function exportQuote() {
+            const quantity = parseInt(quantityInput.value) || 1000;
+            const discountTier = getVolumeDiscount(quantity);
+            const actualInkCost = parseFloat(actualInkCostInput.value) || 0.021;
+            
+            const quoteData = {
+                quantity: quantityInput.value,
+                width: widthInput.value,
+                length: lengthInput.value,
+                area: calculateArea().toFixed(1),
+                material: document.querySelector('input[name="material"]:checked').value,
+                laminate: document.querySelector('input[name="laminate"]:checked').value,
+                actualInkCost: actualInkCost,
+                costPerLabel: totalCostEl.textContent,
+                sellPricePerLabel: sellPriceEl.textContent,
+                totalCost: projectCostEl.textContent,
+                totalSellPrice: totalSellPriceEl.textContent,
+                discountTier: discountTier.discount > 0 ? `${(discountTier.discount * 100).toFixed(0)}% Volume Discount` : 'Base Price',
+                date: new Date().toLocaleDateString()
+            };
+
+            let quoteText = `LETTUCE PRINT - LABEL QUOTE\n`;
+            quoteText += `=====================================\n\n`;
+            quoteText += `Quantity: ${quoteData.quantity} labels\n`;
+            quoteText += `Dimensions: ${quoteData.width}" × ${quoteData.length}" (${quoteData.area} sq in)\n`;
+            quoteText += `Material: ${quoteData.material.toUpperCase()}\n`;
+            quoteText += `Laminate: ${quoteData.laminate.charAt(0).toUpperCase() + quoteData.laminate.slice(1)}\n`;
+            quoteText += `Actual Ink Cost: $${quoteData.actualInkCost.toFixed(4)} per label\n`;
+            if (discountTier.discount > 0) {
+                quoteText += `Volume Discount: ${quoteData.discountTier}\n`;
+            }
+            quoteText += `\nYOUR COST:\n`;
+            quoteText += `Cost per Label: ${quoteData.costPerLabel}\n`;
+            quoteText += `Total Project Cost: ${quoteData.totalCost}\n\n`;
+            quoteText += `SUGGESTED SELLING PRICE (100% Markup):\n`;
+            quoteText += `Sell Price per Label: ${quoteData.sellPricePerLabel}\n`;
+            quoteText += `Total Sell Price: ${quoteData.totalSellPrice}\n\n`;
+            quoteText += `PROFIT MARGIN: 100% markup = 50% profit margin\n\n`;
+            quoteText += `Based on actual test print data\n`;
+            quoteText += `Quote Date: ${quoteData.date}\n`;
+            quoteText += `=====================================\n`;
+
+            // Create and download text file
+            const blob = new Blob([quoteText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `LettucePrint_Quote_${quoteData.quantity}labels_${quoteData.date.replace(/\//g, '-')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function calculateDefaultInkCost() {
+            const area = calculateArea();
+            const coverageInfo = getInkCoverageLevel(area);
+            const inkCostPerSqIn = pricingData.ink.baseRate * coverageInfo.percentage / pricingData.ink.coverageMultiplier;
+            return inkCostPerSqIn * area;
+        }
+
+        function resetCalculator() {
+            quantityInput.value = 1000;
+            widthInput.value = 2.0;
+            lengthInput.value = 3.0;
+            actualInkCostInput.value = calculateDefaultInkCost().toFixed(4);
+            document.querySelector('input[name="material"][value="standard"]').checked = true;
+            document.querySelector('input[name="laminate"][value="gloss"]').checked = true;
+            
+            // Update radio button visuals
+            document.querySelectorAll('.radio-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector('input[name="material"][value="standard"]').parentElement.classList.add('selected');
+            document.querySelector('input[name="laminate"][value="gloss"]').parentElement.classList.add('selected');
+            
+            updateCalculations();
+        }
+
+        // Event listeners
+        quantityInput.addEventListener('input', updateCalculations);
+        widthInput.addEventListener('input', updateCalculations);
+        lengthInput.addEventListener('input', updateCalculations);
+        actualInkCostInput.addEventListener('input', updateCalculations);
+
+        materialRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Update visual selection
+                document.querySelectorAll('input[name="material"]').forEach(r => {
+                    r.parentElement.classList.remove('selected');
+                });
+                this.parentElement.classList.add('selected');
+                updateCalculations();
+            });
+        });
+
+        laminateRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Update visual selection
+                document.querySelectorAll('input[name="laminate"]').forEach(r => {
+                    r.parentElement.classList.remove('selected');
+                });
+                this.parentElement.classList.add('selected');
+                updateCalculations();
+            });
+        });
+
+        // Initialize calculations on page load
+        // Set default ink cost based on current dimensions
+        actualInkCostInput.value = calculateDefaultInkCost().toFixed(4);
+        updateCalculations();
+
+        // Add some interactive feedback
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('focus', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            
+            element.addEventListener('blur', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
