@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lettuce Print - ADA Compliant Label Pricing Calculator</title>
+    <style>
+        :root {
+            --primary-bg: #f8f9fa;
+            --secondary-bg: #ffffff;
+            --accent-primary: #005a9c;
+            --text-primary: #212529;
+            --text-secondary: #495057;
+            --success: #2e8540;
+            --warning: #d83933;
+            --border-light: #dee2e6;
+            --border-medium: #adb5bd;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--secondary-bg);
+            border: 2px solid var(--border-medium);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--accent-primary);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .section {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: var(--text-primary);
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            text-align: center;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 15px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            background: var(--secondary-bg);
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 90, 156, 0.3);
+        }
+
+        .input-group label {
+            display: block;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .required-indicator {
+            color: var(--warning);
+            font-weight: 700;
+        }
+
+        .form-input {
+            width: 100%;
+            background: white;
+            border: 2px solid var(--border-medium);
+            border-radius: 6px;
+            padding: 14px 16px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 90, 156, 0.3);
+        }
+
+        .help-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 6px;
+            display: block;
+        }
+
+        .calculate-button {
+            background: var(--success);
+            color: white;
+            border: 2px solid var(--success);
+            border-radius: 8px;
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .calculate-button:hover {
+            background: #2a6e3a;
+            border-color: #2a6e3a;
+            transform: translateY(-2px);
+        }
+
+        .material-group {
+            background: rgba(0, 90, 156, 0.05);
+            border: 2px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+
+        .material-group h5 {
+            color: var(--accent-primary);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .finish-group {
+            background: rgba(46, 133, 64, 0.05);
+            border: 2px solid var(--success);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+
+        .finish-group h5 {
+            color: var(--success);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .results-section {
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .breakdown-item {
+            background: var(--primary-bg);
+            border: 2px solid var(--border-light);
+            border-radius: 6px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .breakdown-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .breakdown-value {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .pricing-card {
+            background: var(--primary-bg);
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .pricing-tier {
+            color: var(--accent-primary);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .pricing-quantity {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .cost-price {
+            color: var(--warning);
+            font-weight: 700;
+        }
+
+        .sell-price {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .discount {
+            color: var(--accent-primary);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            font-weight: 700;
+            background: rgba(0, 90, 156, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .calculation-details {
+            background: var(--primary-bg);
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            padding: 25px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .cost-input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .error-message {
+            color: var(--warning);
+            font-weight: 700;
+            background: rgba(216, 57, 51, 0.1);
+            border: 2px solid var(--warning);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        *:focus {
+            outline: 3px solid var(--accent-primary);
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="main-container">
+        <header class="header">
+            <h1>🥬 Lettuce Print</h1>
+            <p>ADA Compliant Professional Label Pricing Calculator - Accurate Roll-Based Costing</p>
+        </header>
+
+        <main id="main-content" class="content">
+            <!-- Label Specifications Section -->
+            <section class="section" aria-labelledby="label-specs">
+                <h2 id="label-specs">📏 Label Specifications</h2>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="labelWidth">Label Width Across <span class="required-indicator">*</span></label>
+                        <input type="number" id="labelWidth" class="form-input" placeholder="2.5" step="0.1" value="2.5" aria-describedby="labelWidth-help" required>
+                        <span id="labelWidth-help" class="help-text">Enter width in inches (decimal allowed)</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="labelLength">Label Length Around <span class="required-indicator">*</span></label>
+                        <input type="number" id="labelLength" class="form-input" placeholder="1.5" step="0.1" value="1.5" aria-describedby="labelLength-help" required>
+                        <span id="labelLength-help" class="help-text">Enter length in inches (decimal allowed)</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="gapWidth">Gap Size Across <span class="required-indicator">*</span></label>
+                        <input type="number" id="gapWidth" class="form-input" placeholder="0.125" step="0.01" value="0.125" aria-describedby="gapWidth-help" required>
+                        <span id="gapWidth-help" class="help-text">Space between labels across the roll</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="gapLength">Gap Size Around <span class="required-indicator">*</span></label>
+                        <input type="number" id="gapLength" class="form-input" placeholder="0.0625" step="0.01" value="0.0625" aria-describedby="gapLength-help" required>
+                        <span id="gapLength-help" class="help-text">Space between labels around the roll</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Material Specifications Section -->
+            <section class="section" aria-labelledby="material-specs">
+                <h2 id="material-specs">🎨 Material & Roll Specifications</h2>
+                
+                <div class="cost-section">
+                    <h4>📦 Facestock Roll Information</h4>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="facestockRollWidth">Facestock Roll Width Across <span class="required-indicator">*</span></label>
+                            <input type="number" id="facestockRollWidth" class="form-input" placeholder="13" step="0.1" value="13" aria-describedby="facestockRollWidth-help" required>
+                            <span id="facestockRollWidth-help" class="help-text">Width of the facestock roll in inches</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="facestockRollLength">Facestock Roll Length Around <span class="required-indicator">*</span></label>
+                            <input type="number" id="facestockRollLength" class="form-input" placeholder="18000" step="1" value="18000" aria-describedby="facestockRollLength-help" required>
+                            <span id="facestockRollLength-help" class="help-text">Length of the facestock roll in inches (1500 ft = 18,000 in)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cost-section">
+                    <h4>✨ Laminate Roll Information</h4>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="laminateRollWidth">Laminate Roll Width Across <span class="required-indicator">*</span></label>
+                            <input type="number" id="laminateRollWidth" class="form-input" placeholder="13" step="0.1" value="13" aria-describedby="laminateRollWidth-help" required>
+                            <span id="laminateRollWidth-help" class="help-text">Width of the laminate roll in inches</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="laminateRollLength">Laminate Roll Length Around <span class="required-indicator">*</span></label>
+                            <input type="number" id="laminateRollLength" class="form-input" placeholder="15000" step="1" value="15000" aria-describedby="laminateRollLength-help" required>
+                            <span id="laminateRollLength-help" class="help-text">Length of the laminate roll in inches (1250 ft = 15,000 in)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Material Type and Finish Costs Section -->
+            <section class="section" aria-labelledby="material-finish-costs">
+                <h2 id="material-finish-costs">💰 Material Type & Finish Costs</h2>
+                
+                <div class="material-group">
+                    <h5>📄 Material Type Roll Costs</h5>
+                    <div class="cost-input-grid">
+                        <div class="input-group">
+                            <label for="paperRollPrice">Standard Paper Roll Price <span class="required-indicator">*</span></label>
+                            <input type="number" id="paperRollPrice" class="form-input" placeholder="125" step="0.01" value="125" aria-describedby="paperRollPrice-help" required>
+                            <span id="paperRollPrice-help" class="help-text">Total cost per paper facestock roll</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="boppRollPrice">BOPP Plastic Roll Price <span class="required-indicator">*</span></label>
+                            <input type="number" id="boppRollPrice" class="form-input" placeholder="180" step="0.01" value="180" aria-describedby="boppRollPrice-help" required>
+                            <span id="boppRollPrice-help" class="help-text">Total cost per BOPP facestock roll</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="finish-group">
+                    <h5>🎨 Finish Roll Costs</h5>
+                    <div class="cost-input-grid">
+                        <div class="input-group">
+                            <label for="matteLaminatePrice">Matte Laminate Roll Price</label>
+                            <input type="number" id="matteLaminatePrice" class="form-input" placeholder="85" step="0.01" value="85" aria-describedby="matteLaminatePrice-help">
+                            <span id="matteLaminatePrice-help" class="help-text">Cost per matte finish laminate roll</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="glossLaminatePrice">Gloss Laminate Roll Price</label>
+                            <input type="number" id="glossLaminatePrice" class="form-input" placeholder="95" step="0.01" value="95" aria-describedby="glossLaminatePrice-help">
+                            <span id="glossLaminatePrice-help" class="help-text">Cost per gloss finish laminate roll</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="inkCostPerLabel">Ink Cost Per Label <span class="required-indicator">*</span></label>
+                    <input type="number" id="inkCostPerLabel" class="form-input" placeholder="0.0015" step="0.0001" value="0.0015" aria-describedby="inkCostPerLabel-help" required>
+                    <span id="inkCostPerLabel-help" class="help-text">Calculated ink cost for each individual label</span>
+                </div>
+            </section>
+
+            <!-- Finish Selection Section -->
+            <section class="section" aria-labelledby="finish-selection">
+                <h2 id="finish-selection">🎨 Finish Selection</h2>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="finishType">Finish Type</label>
+                        <select id="finishType" class="form-input" style="background: white; border: 2px solid var(--border-medium); padding: 14px 16px; border-radius: 6px; font-size: 1rem;" aria-describedby="finishType-help">
+                            <option value="matte">Matte Finish</option>
+                            <option value="gloss">Gloss Finish</option>
+                        </select>
+                        <span id="finishType-help" class="help-text">Select the laminate finish type</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pricing Configuration Section -->
+            <section class="section" aria-labelledby="pricing-config">
+                <h2 id="pricing-config">⚙️ Pricing Configuration</h2>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="markup">Markup Percentage <span class="required-indicator">*</span></label>
+                        <input type="number" id="markup" class="form-input" placeholder="100" step="1" value="100" aria-describedby="markup-help" required>
+                        <span id="markup-help" class="help-text">Profit margin percentage to apply to costs</span>
+                    </div>
+                </div>
+            </section>
+
+            <button onclick="calculateAccuratePricing()" class="calculate-button" aria-describedby="calculate-help">
+                Calculate Accurate Pricing
+            </button>
+            <span id="calculate-help" class="sr-only">Calculates pricing based on roll costs and material specifications</span>
+
+            <!-- Results Section -->
+            <div id="results" class="results-section" role="region" aria-live="polite" aria-atomic="true">
+                <h2>💎 Pricing Breakdown</h2>
+                
+                <div class="section-title">📊 Cost Component Analysis</div>
+                <div id="costBreakdown" class="breakdown-grid" aria-label="Cost breakdown by components"></div>
+                
+                <div class="section-title">💰 Volume Pricing with Discounts</div>
+                <div id="pricingGrid" class="pricing-grid" aria-label="Volume pricing with discounts"></div>
+                
+                <div class="calculation-details" id="calculationDetails" aria-label="Detailed calculation steps">
+                    <!-- Detailed calculation steps will appear here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Volume discount tiers
+        const volumeDiscounts = [
+            { min: 1, max: 999, tier: 'Standard', discount: 0 },
+            { min: 1000, max: 4999, tier: '1K+', discount: 0.03 },
+            { min: 5000, max: 9999, tier: '5K+', discount: 0.07 },
+            { min: 10000, max: 24999, tier: '10K+', discount: 0.12 },
+            { min: 25000, max: Infinity, tier: '25K+', discount: 0.18 }
+        ];
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            errorDiv.setAttribute('role', 'alert');
+            
+            const resultsSection = document.getElementById('results');
+            resultsSection.parentNode.insertBefore(errorDiv, resultsSection);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function calculateAccuratePricing() {
+            // Clear any existing error messages
+            const existingErrors = document.querySelectorAll('.error-message');
+            existingErrors.forEach(error => error.remove());
+
+            // Get all input values
+            const labelWidth = parseFloat(document.getElementById('labelWidth').value);
+            const labelLength = parseFloat(document.getElementById('labelLength').value);
+            const gapWidth = parseFloat(document.getElementById('gapWidth').value);
+            const gapLength = parseFloat(document.getElementById('gapLength').value);
+            
+            const facestockRollWidth = parseFloat(document.getElementById('facestockRollWidth').value);
+            const facestockRollLength = parseFloat(document.getElementById('facestockRollLength').value);
+            const paperRollPrice = parseFloat(document.getElementById('paperRollPrice').value);
+            const boppRollPrice = parseFloat(document.getElementById('boppRollPrice').value);
+            
+            const laminateRollWidth = parseFloat(document.getElementById('laminateRollWidth').value);
+            const laminateRollLength = parseFloat(document.getElementById('laminateRollLength').value);
+            const matteLaminatePrice = parseFloat(document.getElementById('matteLaminatePrice').value) || 0;
+            const glossLaminatePrice = parseFloat(document.getElementById('glossLaminatePrice').value) || 0;
+            
+            const inkCostPerLabel = parseFloat(document.getElementById('inkCostPerLabel').value);
+            const finishType = document.getElementById('finishType').value;
+            const markup = parseFloat(document.getElementById('markup').value) / 100;
+
+            // Validate required inputs
+            if (!labelWidth || !labelLength || !gapWidth || !gapLength || 
+                !facestockRollWidth || !facestockRollLength || !paperRollPrice || !boppRollPrice ||
+                !laminateRollWidth || !laminateRollLength || !inkCostPerLabel || markup === undefined) {
+                showError('Please fill in all required fields marked with *');
+                return;
+            }
+
+            // Calculate effective dimensions
+            const effectiveWidth = labelWidth + gapWidth;
+            const effectiveLength = labelLength + gapLength;
+
+            // Calculate labels per roll
+            const labelsAcrossFacestock = Math.floor(facestockRollWidth / effectiveWidth);
+            const labelsAroundFacestock = Math.floor(facestockRollLength / effectiveLength);
+            const labelsPerRollFacestock = labelsAcrossFacestock * labelsAroundFacestock;
+
+            const labelsAcrossLaminate = Math.floor(laminateRollWidth / effectiveWidth);
+            const labelsAroundLaminate = Math.floor(laminateRollLength / effectiveLength);
+            const labelsPerRollLaminate = labelsAcrossLaminate * labelsAroundLaminate;
+
+            // Determine laminate price based on finish type
+            const selectedLaminatePrice = finishType === 'matte' ? matteLaminatePrice : glossLaminatePrice;
+
+            // Calculate cost per label components
+            const facestockCostPerLabelPaper = paperRollPrice / labelsPerRollFacestock;
+            const facestockCostPerLabelBOPP = boppRollPrice / labelsPerRollFacestock;
+            const laminateCostPerLabel = selectedLaminatePrice / labelsPerRollLaminate;
+
+            // Calculate total cost per label
+            const totalCostPerLabelPaper = inkCostPerLabel + facestockCostPerLabelPaper + laminateCostPerLabel;
+            const totalCostPerLabelBOPP = inkCostPerLabel + facestockCostPerLabelBOPP + laminateCostPerLabel;
+
+            // Display results
+            displayCostBreakdown({
+                ink: inkCostPerLabel,
+                paperFacestock: facestockCostPerLabelPaper,
+                boppFacestock: facestockCostPerLabelBOPP,
+                laminate: laminateCostPerLabel,
+                paperTotal: totalCostPerLabelPaper,
+                boppTotal: totalCostPerLabelBOPP
+            });
+
+            displayCalculationDetails({
+                labelWidth, labelLength, gapWidth, gapLength,
+                effectiveWidth, effectiveLength,
+                facestockRollWidth, facestockRollLength,
+                labelsAcrossFacestock, labelsAroundFacestock, labelsPerRollFacestock,
+                laminateRollWidth, laminateRollLength,
+                labelsAcrossLaminate, labelsAroundLaminate, labelsPerRollLaminate,
+                paperRollPrice, boppRollPrice, selectedLaminatePrice,
+                facestockCostPerLabelPaper, facestockCostPerLabelBOPP, laminateCostPerLabel,
+                finishType, matteLaminatePrice, glossLaminatePrice
+            });
+
+            generateVolumePricing(totalCostPerLabelPaper, totalCostPerLabelBOPP, markup);
+
+            // Show results
+            const resultsSection = document.getElementById('results');
+            resultsSection.classList.add('show');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function displayCostBreakdown(costs) {
+            const breakdownHTML = `
+                <div class="breakdown-item">
+                    <div class="breakdown-label">Ink Cost</div>
+                    <div class="breakdown-value">$${costs.ink.toFixed(4)}</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-label">Paper Facestock</div>
+                    <div class="breakdown-value">$${costs.paperFacestock.toFixed(4)}</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-label">BOPP Facestock</div>
+                    <div class="breakdown-value">$${costs.boppFacestock.toFixed(4)}</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-label">Laminate</div>
+                    <div class="breakdown-value">$${costs.laminate.toFixed(4)}</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-label">Paper Total</div>
+                    <div class="breakdown-value">$${costs.paperTotal.toFixed(4)}</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-label">BOPP Total</div>
+                    <div class="breakdown-value">$${costs.boppTotal.toFixed(4)}</div>
+                </div>
+            `;
+            document.getElementById('costBreakdown').innerHTML = breakdownHTML;
+        }
+
+        function displayCalculationDetails(details) {
+            const detailsHTML = `
+                <div style="color: var(--text-primary);">
+                    <h4 style="margin-bottom: 15px; color: var(--accent-primary);">🔍 Detailed Calculation Steps:</h4>
+                    
+                    <h5 style="margin: 10px 0 5px 0; color: var(--info);">Step 1: Effective Dimensions</h5>
+                    <div style="margin-left: 15px; font-family: monospace;">
+                    Effective Width = ${details.labelWidth}" + ${details.gapWidth}" = ${details.effectiveWidth.toFixed(4)}"<br>
+                    Effective Length = ${details.labelLength}" + ${details.gapLength}" = ${details.effectiveLength.toFixed(4)}"
+                    </div>
+                    
+                    <h5 style="margin: 10px 0 5px 0; color: var(--info);">Step 2: Labels per Facestock Roll</h5>
+                    <div style="margin-left: 15px; font-family: monospace;">
+                    Labels Across = FLOOR(${details.facestockRollWidth}" ÷ ${details.effectiveWidth.toFixed(4)}") = ${details.labelsAcrossFacestock}<br>
+                    Labels Around = FLOOR(${details.facestockRollLength}" ÷ ${details.effectiveLength.toFixed(4)}") = ${details.labelsAroundFacestock}<br>
+                    <strong>Total Labels per Facestock Roll = ${details.labelsAcrossFacestock} × ${details.labelsAroundFacestock} = ${details.labelsPerRollFacestock.toLocaleString()}</strong>
+                    </div>
+                    
+                    <h5 style="margin: 10px 0 5px 0; color: var(--info);">Step 3: Labels per Laminate Roll</h5>
+                    <div style="margin-left: 15px; font-family: monospace;">
+                    Labels Across = FLOOR(${details.laminateRollWidth}" ÷ ${details.effectiveWidth.toFixed(4)}") = ${details.labelsAcrossLaminate}<br>
+                    Labels Around = FLOOR(${details.laminateRollLength}" ÷ ${details.effectiveLength.toFixed(4)}") = ${details.labelsAroundLaminate}<br>
+                    <strong>Total Labels per Laminate Roll = ${details.labelsAcrossLaminate} × ${details.labelsAroundLaminate} = ${details.labelsPerRollLaminate.toLocaleString()}</strong>
+                    </div>
+                    
+                    <h5 style="margin: 10px 0 5px 0; color: var(--info);">Step 4: Material & Finish Costs</h5>
+                    <div style="margin-left: 15px; font-family: monospace;">
+                    Paper Facestock = $${details.paperRollPrice} ÷ ${details.labelsPerRollFacestock.toLocaleString()} = $${details.facestockCostPerLabelPaper.toFixed(6)}<br>
+                    BOPP Facestock = $${details.boppRollPrice} ÷ ${details.labelsPerRollFacestock.toLocaleString()} = $${details.facestockCostPerLabelBOPP.toFixed(6)}<br>
+                    ${details.finishType === 'matte' ? 'Matte' : 'Gloss'} Laminate = $${details.selectedLaminatePrice} ÷ ${details.labelsPerRollLaminate.toLocaleString()} = $${details.laminateCostPerLabel.toFixed(6)}
+                    </div>
+                    
+                    <h5 style="margin: 10px 0 5px 0; color: var(--info);">Step 5: Total Cost per Label</h5>
+                    <div style="margin-left: 15px; font-family: monospace;">
+                    Paper Total = Ink + Paper Facestock + Laminate<br>
+                    BOPP Total = Ink + BOPP Facestock + Laminate
+                    </div>
+                </div>
+            `;
+            document.getElementById('calculationDetails').innerHTML = detailsHTML;
+        }
+
+        function generateVolumePricing(paperCostPerLabel, boppCostPerLabel, markup) {
+            const quantities = [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000];
+            let pricingHTML = '';
+
+            quantities.forEach(qty => {
+                const discount = volumeDiscounts.find(tier => qty >= tier.min && qty <= tier.max) || volumeDiscounts[0];
+                
+                // Paper pricing
+                const paperDiscountedCost = paperCostPerLabel * (1 - discount.discount);
+                const paperSellPrice = paperDiscountedCost * (1 + markup);
+                
+                // BOPP pricing
+                const boppDiscountedCost = boppCostPerLabel * (1 - discount.discount);
+                const boppSellPrice = boppDiscountedCost * (1 + markup);
+
+                pricingHTML += `
+                    <div class="pricing-card">
+                        <div class="pricing-tier">${discount.tier}</div>
+                        <div class="pricing-quantity">${qty.toLocaleString()} Labels</div>
+                        <div class="pricing-details">
+                            <div style="margin-bottom: 10px;">
+                                <strong>Paper:</strong><br>
+                                Cost: <span class="cost-price">$${paperDiscountedCost.toFixed(4)}</span> each<br>
+                                Sell: <span class                                >Sell: <span class="sell-price">$${paperSellPrice.toFixed(4)}</span> each<br>
+                                Total: <span class="sell-price">$${(paperSellPrice * qty).toFixed(2)}</span>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <strong>BOPP:</strong><br>
+                                Cost: <span class="cost-price">$${boppDiscountedCost.toFixed(4)}</span> each<br>
+                                Sell: <span class="sell-price">$${boppSellPrice.toFixed(4)}</span> each<br>
+                                Total: <span class="sell-price">$${(boppSellPrice * qty).toFixed(2)}</span>
+                            </div>
+                            ${discount.discount > 0 ? `<div class="discount">${(discount.discount * 100).toFixed(0)}% volume discount applied</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('pricingGrid').innerHTML = pricingHTML;
+        }
+
+        // Initialize with default calculation
+        window.addEventListener('load', function() {
+            setTimeout(calculateAccuratePricing, 500);
+        });
+    </script>
+</body>
+</html>
